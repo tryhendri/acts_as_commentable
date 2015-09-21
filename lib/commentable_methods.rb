@@ -58,9 +58,9 @@ module Juixe
             has_many :all_comments, { :as => :commentable, :dependent => :destroy, class_name: 'Comment' }.merge(join_options)
           else
             Rails.logger.info(" ***** ROLES BLANK ***** ")
-            Rails.logger.info(" ***** #{attributes.inspect} ***** ")
             has_many :comments, {:as => :commentable, :dependent => :destroy}.merge(join_options)
             accepts_nested_attributes_for :comments, allow_destroy: true, reject_if: proc { |attributes| attributes['comment'].blank? }
+            proc { |attributes| Rails.logger.info(" ATTRIBUTES: #{attributes.inspect} ") }
           end
 
           comment_types.each do |role|
