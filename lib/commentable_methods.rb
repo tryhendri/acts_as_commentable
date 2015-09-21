@@ -50,12 +50,15 @@ module Juixe
           self.comment_types = (comment_roles.blank? ? [:comments] : comment_roles)
 
           if !comment_roles.blank?
+            Rails.logger.info(" ***** ROLES NOT BLANK ***** ")
             comment_roles.each do |role|
               define_role_based_inflection(role)
               accepts_nested_attributes_for "#{role.to_s}_comments".to_sym, allow_destroy: true, reject_if: proc { |attributes| attributes['comment'].blank? }
             end
             has_many :all_comments, { :as => :commentable, :dependent => :destroy, class_name: 'Comment' }.merge(join_options)
           else
+            Rails.logger.info(" ***** ROLES BLANK ***** ")
+            Rails.logger.info(" ***** #{attributes.inspect} ***** ")
             has_many :comments, {:as => :commentable, :dependent => :destroy}.merge(join_options)
             accepts_nested_attributes_for :comments, allow_destroy: true, reject_if: proc { |attributes| attributes['comment'].blank? }
           end
