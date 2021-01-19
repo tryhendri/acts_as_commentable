@@ -9,8 +9,8 @@ ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":me
 class ActsAsCommentableTest < Test::Unit::TestCase
 
   def setup_comments
-    require File.expand_path(File.dirname(__FILE__) + '/../lib/generators/comment/templates/create_comments') 
-    CreateComments.up
+    require File.expand_path(File.dirname(__FILE__) + '/../lib/generators/comment/templates/create_comments')
+    # CreateComments.up
     load(File.expand_path(File.dirname(__FILE__) + '/../lib/generators/comment/templates/comment.rb'))
   end
 
@@ -31,21 +31,21 @@ class ActsAsCommentableTest < Test::Unit::TestCase
   end
 
   def test_create_comment
-    post = Post.create(:text => "Awesome post !")
+    post = ::Post.create(:text => "Awesome post !")
     assert_not_nil post.comments.create(:title => "comment.", :comment => "This is the a comment.").id
 
     wall = Wall.create(:name => "My Wall")
     assert_not_nil wall.public_comments.create(:title => "comment.", :comment => "This is the a comment.").id
     assert_not_nil wall.private_comments.create(:title => "comment.", :comment => "This is the a comment.").id
     assert_raise NoMethodError do
-      wall.comments.create(:title => "Comment", :title => "Title")
+      wall.comments.create(:comment => "Comment", :title => "Title")
     end
   end
 
   def test_fetch_comments
-    post = Post.create(:text => "Awesome post !")
+    post = ::Post.create(:text => "Awesome post !")
     post.comments.create(:title => "First comment.", :comment => "This is the first comment.")
-    commentable = Post.find(1)
+    commentable = ::Post.find(1)
     assert_equal 1, commentable.comments.length
     assert_equal "First comment.", commentable.comments.first.title
     assert_equal "This is the first comment.", commentable.comments.first.comment
@@ -58,30 +58,30 @@ class ActsAsCommentableTest < Test::Unit::TestCase
   end
 
   def test_find_comments_by_user
-    user = User.create(:name => "Mike")
-    user2 = User.create(:name => "Fake") 
-    post = Post.create(:text => "Awesome post !")
+    user = ::User.create(:name => "Mike")
+    user2 = ::User.create(:name => "Fake")
+    post = ::Post.create(:text => "Awesome post !")
     comment = post.comments.create(:title => "First comment.", :comment => "This is the first comment.", :user => user)
-    assert_equal true, Post.find_comments_by_user(user).include?(comment)
-    assert_equal false, Post.find_comments_by_user(user2).include?(comment) 
+    assert_equal true, ::Post.find_comments_by_user(user).include?(comment)
+    assert_equal false, ::Post.find_comments_by_user(user2).include?(comment)
   end
 
   def test_find_comments_for_commentable
-    post = Post.create(:text => "Awesome post !")
+    post = ::Post.create(:text => "Awesome post !")
     comment = post.comments.create(:title => "First comment.", :comment => "This is the first comment.")
     assert_equal [comment], Comment.find_comments_for_commentable(post.class.name, post.id)
   end
 
   def test_find_commentable
-    post = Post.create(:text => "Awesome post !")
+    post = ::Post.create(:text => "Awesome post !")
     comment = post.comments.create(:title => "First comment.", :comment => "This is the first comment.")
-    assert_equal post, Comment.find_commentable(post.class.name, post.id) 
+    assert_equal post, Comment.find_commentable(post.class.name, post.id)
   end
 
   def test_find_comments_for
-    post = Post.create(:text => "Awesome post !")
+    post = ::Post.create(:text => "Awesome post !")
     comment = post.comments.create(:title => "First comment.", :comment => "This is the first comment.")
-    assert_equal [comment], Post.find_comments_for(post)
+    assert_equal [comment], ::Post.find_comments_for(post)
 
     wall = Wall.create(:name => "wall")
     private_comment = wall.private_comments.create(:title => "wall private comment", :comment => "Yipiyayeah !")
@@ -92,10 +92,10 @@ class ActsAsCommentableTest < Test::Unit::TestCase
   end
 
   def test_find_public_private_comments_by_user
-    user = User.create(:name => "Mike")
-    post = Post.create(:text => "Awesome post !")
+    user = ::User.create(:name => "Mike")
+    post = ::Post.create(:text => "Awesome post !")
     comment = post.comments.create(:title => "First comment.", :comment => "This is the first comment.", :user => user)
-    assert_equal [comment], Post.find_comments_by_user(user)
+    assert_equal [comment], ::Post.find_comments_by_user(user)
 
     wall = Wall.create(:name => "wall")
     private_comment = wall.private_comments.create(:title => "wall private comment", :comment => "Yipiyayeah !", :user => user)
@@ -106,7 +106,7 @@ class ActsAsCommentableTest < Test::Unit::TestCase
   end
 
   def test_comments_public_private_ordered_by_submitted
-    post = Post.create(:text => "Awesome post !")
+    post = ::Post.create(:text => "Awesome post !")
     comment = post.comments.create(:title => "First comment.", :comment => "This is the first comment.")
     comment2 = post.comments.create(:title => "Second comment.", :comment => "This is the second comment.")
     assert_equal [comment, comment2], post.comments_ordered_by_submitted
@@ -122,7 +122,7 @@ class ActsAsCommentableTest < Test::Unit::TestCase
   end
 
   def test_comments_ordered_by_submitted
-    post = Post.create(:text => "Awesome post !")
+    post = ::Post.create(:text => "Awesome post !")
     comment = post.comments.create(:title => "First comment.", :comment => "This is the first comment.")
     comment2 = post.comments.create(:title => "Second comment.", :comment => "This is the second comment.")
     assert_equal [comment2, comment], post.comments.recent
@@ -138,7 +138,7 @@ class ActsAsCommentableTest < Test::Unit::TestCase
   end
 
   def test_add_comment
-    post = Post.create(:text => "Awesome post !")
+    post = ::Post.create(:text => "Awesome post !")
     comment = Comment.new(:title => "First Comment", :comment => 'Super comment')
     post.add_comment(comment)
     assert_equal [comment], post.comments
@@ -154,7 +154,7 @@ class ActsAsCommentableTest < Test::Unit::TestCase
   end
 
   def test_is_comment_type
-    post = Post.create(:text => "Awesome post !")
+    post = ::Post.create(:text => "Awesome post !")
     comment = Comment.new(:title => "First Comment", :comment => 'Super comment')
     post.add_comment(comment)
     assert_equal true, comment.is_comment_type?(:comment)

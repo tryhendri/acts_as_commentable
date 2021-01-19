@@ -1,10 +1,10 @@
-class Post < ActiveRecord::Base
+class Post < ApplicationRecord
   acts_as_commentable
 end
 
-class User < ActiveRecord::Base
+class User < ApplicationRecord
 end
 
-class Wall < ActiveRecord::Base
+class Wall < ApplicationRecord
   acts_as_commentable :public, :private
 end
