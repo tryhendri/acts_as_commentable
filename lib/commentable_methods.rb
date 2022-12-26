@@ -33,9 +33,27 @@ module Juixe
         end
 
         def define_role_based_inflection_6(role)
-          has_many "#{role.to_s}_comments".to_sym,
-                   -> { where(role: role.to_s) },
-                   has_many_options(role)
+          if RUBY_VERSION.first >= '3'
+            has_many "#{role.to_s}_comments".to_sym,
+                     -> { where(role: role.to_s) },
+                     **has_many_options(role)
+          else
+            has_many "#{role.to_s}_comments".to_sym,
+                     -> { where(role: role.to_s) },
+                     has_many_options(role)
+          end
+        end
+
+        def define_role_based_inflection_7(role)
+          if RUBY_VERSION.first >= '3'
+            has_many "#{role.to_s}_comments".to_sym,
+                     -> { where(role: role.to_s) },
+                     **has_many_options(role)
+          else
+            has_many "#{role.to_s}_comments".to_sym,
+                     -> { where(role: role.to_s) },
+                     has_many_options(role)
+          end
         end
 
 
@@ -67,9 +85,17 @@ module Juixe
               define_role_based_inflection(role)
               accepts_nested_attributes_for "#{role.to_s}_comments".to_sym, allow_destroy: true, reject_if: proc { |attributes| attributes['comment'].blank? }
             end
-            has_many :all_comments, { :as => :commentable, :dependent => :destroy, class_name: 'Comment' }.merge(join_options)
+            if RUBY_VERSION.first >= '3'
+              has_many :all_comments, **{ :as => :commentable, :dependent => :destroy, class_name: 'Comment' }.merge(join_options)
+            else
+              has_many :all_comments, { :as => :commentable, :dependent => :destroy, class_name: 'Comment' }.merge(join_options)
+            end
           else
-            has_many :comments, {:as => :commentable, :dependent => :destroy}.merge(join_options)
+            if RUBY_VERSION.first >= '3'
+              has_many :comments, **{:as => :commentable, :dependent => :destroy}.merge(join_options)
+            else
+              has_many :comments, {:as => :commentable, :dependent => :destroy}.merge(join_options)
+            end
             accepts_nested_attributes_for :comments, allow_destroy: true, reject_if: proc { |attributes| attributes['comment'].blank? }
           end
 

@@ -1,6 +1,7 @@
 require 'test/unit'
 require 'logger'
 require 'pry'
+require 'rails'
 require File.expand_path(File.dirname(__FILE__) + '/../rails/init')
 
 ActiveRecord::Migration.verbose = false

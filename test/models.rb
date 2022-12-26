@@ -1,3 +1,5 @@
+require_relative './application_record'
+
 class Post < ApplicationRecord
   acts_as_commentable
 end
