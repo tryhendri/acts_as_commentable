@@ -9,6 +9,10 @@ commentable models.
 
 Add the following line to your Gemfile
 
+=== Rails 7
+
+  gem 'acts_as_commentable', github: 'tryhendri/acts_as_commentable.git'
+
 === Rails 4
 
   gem 'acts_as_commentable'
@@ -84,6 +88,15 @@ This also works in conjunction with comment types:
 
     class Todo < ActiveRecord::Base
       acts_as_commentable :public, :private, { class_name: 'MyComment' }
+    end
+
+Also work If you have polymorphic association
+
+    class Comment < ApplicationRecord
+      include ActsAsCommentable::Comment
+
+      belongs_to :commentable, polymorphic: true, optional: true
+
     end
 
 
